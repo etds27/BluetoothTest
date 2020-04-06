@@ -15,8 +15,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.DialogTitle;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,18 +45,18 @@ public class MainActivity extends AppCompatActivity {
 
                 switch(state) {
                     case BluetoothAdapter.STATE_OFF:
-                        Log.d(TAG, "onReceive: Bluetooth turned off");
+                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned off");
                         btStatusView.setText("Off");
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
-                        Log.d(TAG, "onReceive: Bluetooth turning off");
+                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning off");
                         break;
                     case BluetoothAdapter.STATE_ON:
-                        Log.d(TAG, "onReceive: Bluetooth turned on");
+                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned on");
                         btStatusView.setText("On");
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        Log.d(TAG, "onReceive: Bluetooth turning on");
+                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning on");
                         break;
                 }
 
@@ -82,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                     case BluetoothAdapter.SCAN_MODE_NONE:
                         Log.d(TAG, "mBluetoothReceiver2: Discovreability Disabled.");
                         btDiscoverabilityStatusView.setText("Discoverability Disabled");
+                        discoverableDevices = new LinkedList<>();
+                        deviceListAdapter.notifyAll();
                         break;
                     case BluetoothAdapter.STATE_CONNECTING:
                         Log.d(TAG, "mBluetoothReceiver2: Connecting");
@@ -99,16 +104,26 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver mBluetoothReceiver3 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //Get action of intent. In this case, it will probably be BLUETOOTH_STATE_CHANGE
+            //Get action of intent. In this case, it will probably be BluetoothDevice.ACTION_FOUND
             final String action = intent.getAction();
-            Log.d(TAG, "onReceive: ACTION FOUND");
+            //Log.d(TAG, "mBluetoothReceiver3: " + Arrays.toString(intent.getExtras().keySet().toArray()));
+            Log.d(TAG, "mBluetoothReceiver3: ACTION FOUND");
 
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 // Get the device passed throught the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // The device that was with the intent is added to the device list.
-                discoverableDevices.add(device);
+
+
+                if (device.getName() != null) {
+                    // The device that was with the intent is added to the device list.
+                    discoverableDevices.add(device);
+                    Log.d(TAG, "mBluetoothReceiver3: Adding device to discoverable list" + device.getName() + ":" + device.getAddress());
+
+                    //Update the device recyclerview
+                    //deviceListAdapter.notifyDataSetChanged();
+                    deviceListAdapter.notifyItemInserted(discoverableDevices.size() - 1);
+                }
             }
 
         }
@@ -118,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mBluetoothReceiver1);
+        unregisterReceiver(mBluetoothReceiver2);
+        unregisterReceiver(mBluetoothReceiver3);
     }
 
     @Override
@@ -148,8 +165,12 @@ public class MainActivity extends AppCompatActivity {
         // Creating Device List
         discoverableDevices = new LinkedList<>();
         deviceListAdapter = new DeviceListAdapter(discoverableDevices);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+
 
         RecyclerView deviceList = findViewById(R.id.bt_device_recycler_view);
+        deviceList.setLayoutManager(llm);
         deviceList.setAdapter(deviceListAdapter);
 
     }
@@ -157,15 +178,15 @@ public class MainActivity extends AppCompatActivity {
     public void displayBTStatus(int status) {
         switch(status) {
             case BluetoothAdapter.STATE_OFF:
-                Log.d(TAG, "onReceive: Bluetooth turned off");
+                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned off");
             case BluetoothAdapter.STATE_TURNING_OFF:
-                Log.d(TAG, "onReceive: Bluetootk turning off");
+                Log.d(TAG, "mBluetoothReceiver1: Bluetootk turning off");
                 btStatusView.setText("Off");
                 break;
             case BluetoothAdapter.STATE_ON:
-                Log.d(TAG, "onReceive: Bluetooth turned on");
+                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned on");
             case BluetoothAdapter.STATE_TURNING_ON:
-                Log.d(TAG, "onReceive: Bluetooth turning on");
+                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning on");
                 btStatusView.setText("On");
                 break;
         }
@@ -203,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
         Intent discoverabilityIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         //Put extra is like addidng parameters to the specific Intent Type
         discoverabilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 30);
+        discoverabilityIntent.putExtra("SERVER_HOST_CLIENT", true);
 
         startActivity(discoverabilityIntent);
 
