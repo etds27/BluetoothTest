@@ -7,11 +7,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.DialogTitle;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeviceListAdapter.DeviceOnClickListener {
     private static final String TAG = "MainActivity";
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -31,7 +32,14 @@ public class MainActivity extends AppCompatActivity {
     private Button btEnableDisableDiscoverable;
     private DeviceListAdapter deviceListAdapter;
     private LinkedList<BluetoothDevice> discoverableDevices;
+    private Room currentRoom;
 
+    private Button hostButton;
+    private Button clientButton;
+    private FrameLayout hostClientFrame;
+
+    private TextView hashView;
+    private EditText hashEntry;
 
 
     private final BroadcastReceiver mBluetoothReceiver1 = new BroadcastReceiver() {
@@ -164,7 +172,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Creating Device List
         discoverableDevices = new LinkedList<>();
-        deviceListAdapter = new DeviceListAdapter(discoverableDevices);
+
+        // Because this implements the OnClickListener, I can pass the instance of itself to the list adapter
+        deviceListAdapter = new DeviceListAdapter(discoverableDevices, this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -173,6 +183,92 @@ public class MainActivity extends AppCompatActivity {
         deviceList.setLayoutManager(llm);
         deviceList.setAdapter(deviceListAdapter);
 
+
+        // Create the functinality for ther host and client buttons
+        hostButton = findViewById(R.id.designate_host_button);
+        hostButton.setOnClickListener(hostButtonOnClickListener());
+
+        clientButton = findViewById(R.id.designate_client_button);
+        clientButton.setOnClickListener(clientButtonOnClickListener());
+        
+        hostClientFrame = findViewById(R.id.host_client_layout);
+
+
+
+
+        // Create a default room for application to start with
+        currentRoom = new Room();
+        currentRoom.generateHash();
+
+        // Start the application on the host button
+        hostButtonSelect();
+        updateHostFrameHash();
+    }
+
+    private void hostButtonSelect() {
+        Log.d(TAG, "hostButtonSelect: Selected Host");
+        hostButton.setBackgroundColor(Color.GRAY);
+        hostClientFrame.removeAllViewsInLayout();
+        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View hostView = li.inflate(R.layout.host_frame_layout, hostClientFrame, true);
+
+
+        ImageButton randomRoom = hostView.findViewById(R.id.generate_random_room_button);
+        hashView = hostView.findViewById(R.id.random_room_hash_text);
+
+        randomRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentRoom = new Room();
+                currentRoom.generateHash();
+                updateHostFrameHash();
+            }
+        });
+    }
+
+    private void updateHostFrameHash() {
+        hashView.setText(currentRoom.getHash());
+    }
+
+    private View.OnClickListener hostButtonOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hostButtonSelect();
+            }
+        };
+    }
+
+    private void clientButtonSelect() {
+        Log.d(TAG, "clientButtonSelect: Selected Client");
+        clientButton.setBackgroundColor(Color.GRAY);
+        hostButton.setBackgroundColor(Color.WHITE);
+        hostClientFrame.removeAllViewsInLayout();
+        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View hostView = li.inflate(R.layout.client_frame_layout, hostClientFrame, true);
+
+
+        ImageButton initiateConnection = hostView.findViewById(R.id.connect_to_bluetooth_button);
+        hashEntry = hostView.findViewById(R.id.hash_text_entry);
+
+        // This on click listener will iniate the bluetooth client service class using the room id typed into the edit text
+        initiateConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentRoom = new Room();
+                currentRoom.setHash(hashEntry.getText().toString());
+
+            }
+        });
+    }
+
+    private View.OnClickListener clientButtonOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clientButtonSelect();
+            }
+        };
     }
 
     public void displayBTStatus(int status) {
@@ -272,6 +368,15 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
+    }
+
+    // Implemented from Device On Click
+    @Override
+    public void onDeviceClick(int position) {
+        BluetoothDevice selectedDevice = discoverableDevices.get(position);
+        Log.d(TAG, "onDeviceClick: Selected " + selectedDevice.getName());
+
+        BluetoothConnectionClient bluetoothConnectionClient = new BluetoothConnectionClient(getApplicationContext(), currentRoom);
     }
 }
 

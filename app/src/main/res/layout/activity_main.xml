@@ -66,6 +66,41 @@
             android:layout_below="@id/bt_discover_devices"
             android:id="@+id/bt_device_recycler_view"
     />
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/bt_device_recycler_view"
+            >
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/connection_type_frame"
+                >
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Host"
+                    android:id="@+id/designate_host_button"
+
+            />
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Client"
+                    android:id="@+id/designate_client_button"
+                    android:layout_toEndOf="@id/designate_host_button"
+            />
+
+        </RelativeLayout>
+        <FrameLayout
+                android:id="@+id/host_client_layout"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/connection_type_frame"/>
+    </RelativeLayout>
 
 
 

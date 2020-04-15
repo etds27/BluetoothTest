@@ -1,6 +1,5 @@
 package com.example.bluetoothtest;
 
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -16,14 +15,16 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-public class BluetoothConnectionService {
+public class BluetoothConnectionClient {
+
     private static final String TAG = "BluetoothConnectionServ";
 
     private static final String APP_NAME = "Bluetooth Test";
 
-    //UUID is how the devices identify each other
-    private static final UUID UUID_UNSECURE =
-            UUID.fromString("a060d5d7-bf91-4856-a0ea-4d777fe5c601");
+    //UUID is how the devices identify each other. This template will be used for the individual UUID
+    private static final String UUID_UNSECURE_TEMPLATE = "a060d5d7-bf91-4856-a0ea-4d777fe5c601";
+
+    private static UUID uuidUnsecureWithHash;
 
     //private static final BluetoothAdapter mBluetoothAdapter;
     private static BluetoothAdapter mBluetoothAdapter;
@@ -41,9 +42,22 @@ public class BluetoothConnectionService {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
-    public BluetoothConnectionService(Context context) {
+    public BluetoothConnectionClient(Context context, Room room) {
         mContext = context;
 
+        String uuidString = constructUuid(room.getHash());
+
+        Log.d(TAG, "BluetoothConnectionClient: UUID String" + uuidString);
+        uuidUnsecureWithHash = UUID.fromString(uuidString);
+
+    }
+
+    private String constructUuid(String roomHash) {
+        // Take the UUID template. Remove the last x amount of letters.
+        String returnHash = UUID_UNSECURE_TEMPLATE.substring(0, UUID_UNSECURE_TEMPLATE.length() - roomHash.length());
+
+        // Add the roomHash to the end of the return HAsh
+        return returnHash + roomHash;
     }
 
     /**
@@ -57,9 +71,9 @@ public class BluetoothConnectionService {
 
             try {
                 //Create new listening server socket
-                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(APP_NAME, UUID_UNSECURE);
+                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(APP_NAME, uuidUnsecureWithHash);
 
-                Log.d(TAG, "AcceptThread: Setting up server with: " + UUID_UNSECURE);
+                Log.d(TAG, "AcceptThread: Setting up server with: " + uuidUnsecureWithHash);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -125,7 +139,7 @@ public class BluetoothConnectionService {
 
             BluetoothSocket tmp = null;
             try {
-                Log.d(TAG, "run: Trying to create insecure rf comm socket using: " + UUID_UNSECURE);
+                Log.d(TAG, "run: Trying to create insecure rf comm socket using: " + uuidUnsecureWithHash);
                 tmp = mmDevice.createRfcommSocketToServiceRecord(deviceUUID);
             } catch (IOException e) {
                 Log.d(TAG, "run: Unable to create rfComm socket: " + e.getMessage());
@@ -149,7 +163,6 @@ public class BluetoothConnectionService {
         }
 
 
-
         public void cancel() {
             Log.d(TAG, "cancel: Cancelling Connect Thread");
             try {
@@ -168,7 +181,6 @@ public class BluetoothConnectionService {
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
-
 
 
             mProgressBar.setVisibility(View.INVISIBLE);
@@ -195,7 +207,7 @@ public class BluetoothConnectionService {
             while (true) {
                 try {
                     bytes = mmInput.read(buffer);
-                    String incomingMessage = new String(buffer, 0 , bytes);
+                    String incomingMessage = new String(buffer, 0, bytes);
                 } catch (IOException e) {
                     Log.d(TAG, "run: Cannot read input stream. Exiting loop " + e.getMessage());
                     break;
@@ -264,7 +276,5 @@ public class BluetoothConnectionService {
 
         mConnectedThread.write(out);
     }
-
-
-
 }
+
