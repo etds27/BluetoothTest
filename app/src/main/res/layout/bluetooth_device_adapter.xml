@@ -9,7 +9,7 @@
               android:id="@+id/device_name_view"
               android:paddingEnd="15dp"
               android:paddingStart="15dp"
-              android:textSize="30dp"
+              android:textSize="20dp"
               />
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
@@ -17,6 +17,6 @@
               android:id="@+id/device_address_view"
               android:paddingEnd="15dp"
               android:paddingStart="15dp"
-              android:textSize="30dp"
+              android:textSize="20dp"
     />
 </LinearLayout>

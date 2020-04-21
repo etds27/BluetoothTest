@@ -7,20 +7,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.appcompat.widget.DialogTitle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.bluetoothtest.bluetooth.BluetoothConnectionClient;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity implements DeviceListAdapter.DeviceOnClickListener {
@@ -30,16 +27,13 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
     private TextView btStatusView;
     private TextView btDiscoverabilityStatusView;
     private Button btEnableDisableDiscoverable;
-    private DeviceListAdapter deviceListAdapter;
+    static public DeviceListAdapter deviceListAdapter;
     private LinkedList<BluetoothDevice> discoverableDevices;
-    private Room currentRoom;
 
-    private Button hostButton;
-    private Button clientButton;
-    private FrameLayout hostClientFrame;
+    public HostClientSelectFrame hostClientSelectFrame;
 
-    private TextView hashView;
-    private EditText hashEntry;
+    public static BluetoothConnectionClient bluetoothConnectionClient;
+
 
 
     private final BroadcastReceiver mBluetoothReceiver1 = new BroadcastReceiver() {
@@ -115,10 +109,11 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
             //Get action of intent. In this case, it will probably be BluetoothDevice.ACTION_FOUND
             final String action = intent.getAction();
             //Log.d(TAG, "mBluetoothReceiver3: " + Arrays.toString(intent.getExtras().keySet().toArray()));
-            Log.d(TAG, "mBluetoothReceiver3: ACTION FOUND");
+
 
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                Log.d(TAG, "mBluetoothReceiver3: ACTION FOUND");
                 // Get the device passed throught the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
@@ -169,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
         displayBTStatus(mBluetoothAdapter.getState());
 
 
-
         // Creating Device List
         discoverableDevices = new LinkedList<>();
 
@@ -184,92 +178,26 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
         deviceList.setAdapter(deviceListAdapter);
 
 
-        // Create the functinality for ther host and client buttons
-        hostButton = findViewById(R.id.designate_host_button);
-        hostButton.setOnClickListener(hostButtonOnClickListener());
+        // Create the functionality for ther host and client buttons
+        Button hostButton = findViewById(R.id.designate_host_button);
 
-        clientButton = findViewById(R.id.designate_client_button);
-        clientButton.setOnClickListener(clientButtonOnClickListener());
-        
-        hostClientFrame = findViewById(R.id.host_client_layout);
+        Button clientButton = findViewById(R.id.designate_client_button);
+
+        FrameLayout hostClientFrame = findViewById(R.id.host_client_layout);
 
 
+        hostClientSelectFrame = new HostClientSelectFrame(this, hostButton, clientButton, hostClientFrame);
+        hostClientSelectFrame.placeHostFrame();
 
-
-        // Create a default room for application to start with
-        currentRoom = new Room();
-        currentRoom.generateHash();
-
-        // Start the application on the host button
-        hostButtonSelect();
-        updateHostFrameHash();
-    }
-
-    private void hostButtonSelect() {
-        Log.d(TAG, "hostButtonSelect: Selected Host");
-        hostButton.setBackgroundColor(Color.GRAY);
-        hostClientFrame.removeAllViewsInLayout();
-        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View hostView = li.inflate(R.layout.host_frame_layout, hostClientFrame, true);
-
-
-        ImageButton randomRoom = hostView.findViewById(R.id.generate_random_room_button);
-        hashView = hostView.findViewById(R.id.random_room_hash_text);
-
-        randomRoom.setOnClickListener(new View.OnClickListener() {
+        Button hiButton = findViewById(R.id.hi_button);
+        hiButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                currentRoom = new Room();
-                currentRoom.generateHash();
-                updateHostFrameHash();
+            public void onClick(View view) {
+                bluetoothConnectionClient.write("HI!".getBytes(Charset.defaultCharset()));
             }
         });
     }
 
-    private void updateHostFrameHash() {
-        hashView.setText(currentRoom.getHash());
-    }
-
-    private View.OnClickListener hostButtonOnClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hostButtonSelect();
-            }
-        };
-    }
-
-    private void clientButtonSelect() {
-        Log.d(TAG, "clientButtonSelect: Selected Client");
-        clientButton.setBackgroundColor(Color.GRAY);
-        hostButton.setBackgroundColor(Color.WHITE);
-        hostClientFrame.removeAllViewsInLayout();
-        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View hostView = li.inflate(R.layout.client_frame_layout, hostClientFrame, true);
-
-
-        ImageButton initiateConnection = hostView.findViewById(R.id.connect_to_bluetooth_button);
-        hashEntry = hostView.findViewById(R.id.hash_text_entry);
-
-        // This on click listener will iniate the bluetooth client service class using the room id typed into the edit text
-        initiateConnection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentRoom = new Room();
-                currentRoom.setHash(hashEntry.getText().toString());
-
-            }
-        });
-    }
-
-    private View.OnClickListener clientButtonOnClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clientButtonSelect();
-            }
-        };
-    }
 
     public void displayBTStatus(int status) {
         switch(status) {
@@ -376,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
         BluetoothDevice selectedDevice = discoverableDevices.get(position);
         Log.d(TAG, "onDeviceClick: Selected " + selectedDevice.getName());
 
-        BluetoothConnectionClient bluetoothConnectionClient = new BluetoothConnectionClient(getApplicationContext(), currentRoom);
+        //BluetoothConnectionClient bluetoothConnectionClient = new BluetoothConnectionClient(getApplicationContext(), currentRoom);
     }
 }
 

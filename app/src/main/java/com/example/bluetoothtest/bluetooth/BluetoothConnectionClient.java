@@ -1,4 +1,4 @@
-package com.example.bluetoothtest;
+package com.example.bluetoothtest.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+import com.example.bluetoothtest.Room;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,28 +38,29 @@ public class BluetoothConnectionClient {
     private UUID deviceUUID;
     ProgressBar mProgressBar;
 
+    private Room room;
+
     private ConnectedThread mConnectedThread;
 
     static {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
-    public BluetoothConnectionClient(Context context, Room room) {
+    public BluetoothConnectionClient(Context context)  {
         mContext = context;
-
-        String uuidString = constructUuid(room.getHash());
-
-        Log.d(TAG, "BluetoothConnectionClient: UUID String" + uuidString);
-        uuidUnsecureWithHash = UUID.fromString(uuidString);
-
     }
 
-    private String constructUuid(String roomHash) {
+    public void constructUuid() {
+        String roomHash = room.getHash();
+
         // Take the UUID template. Remove the last x amount of letters.
         String returnHash = UUID_UNSECURE_TEMPLATE.substring(0, UUID_UNSECURE_TEMPLATE.length() - roomHash.length());
 
         // Add the roomHash to the end of the return HAsh
-        return returnHash + roomHash;
+        String uuidString = returnHash + roomHash;
+
+        Log.d(TAG, "BluetoothConnectionClient: UUID String" + uuidString);
+        uuidUnsecureWithHash = UUID.fromString(uuidString);
     }
 
     /**
@@ -102,6 +105,7 @@ public class BluetoothConnectionClient {
             //If connection was established
             if (socket != null) {
                 connected(socket, mmDevice);
+
             }
 
 
@@ -183,7 +187,9 @@ public class BluetoothConnectionClient {
             mmSocket = socket;
 
 
-            mProgressBar.setVisibility(View.INVISIBLE);
+            //mProgressBar.setVisibility(View.INVISIBLE);
+            //Toast.makeText(mContext, "Connected to " + mmDevice.getName(), Toast.LENGTH_SHORT).show();
+            //Log.d(TAG, "ConnectedThread: Connected to " + mmDevice.getName());
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
@@ -208,6 +214,7 @@ public class BluetoothConnectionClient {
                 try {
                     bytes = mmInput.read(buffer);
                     String incomingMessage = new String(buffer, 0, bytes);
+                    Log.d(TAG, "run: NEW MESSAGE: " + incomingMessage);
                 } catch (IOException e) {
                     Log.d(TAG, "run: Cannot read input stream. Exiting loop " + e.getMessage());
                     break;
@@ -240,41 +247,82 @@ public class BluetoothConnectionClient {
     /**
      * This will initiate the accept thread
      */
-    public synchronized void start() {
+    public synchronized void startAsClient(BluetoothDevice mmDevice) {
+        Log.d(TAG, "startAsClient: Starting connection as client for device " + mmDevice.getName() + " " + mmDevice.getAddress());
+        // If there is no accept thread, then start one.
+        if (mAcceptInsecureThread != null) {
+            mAcceptInsecureThread.cancel();
+            Log.d(TAG, "startAsClient: Cancelled accept thread");
+        }
+
+
 
         // If the Connect Thread is not null. Then start fresh and make it null
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
+            Log.d(TAG, "startAsClient: Cancelled pre existing connect thread");
+        }
+
+        mConnectThread = new ConnectThread(mmDevice, uuidUnsecureWithHash);
+        mConnectThread.start();
+        Log.d(TAG, "startAsClient: started connect thread");
+
+    }
+
+    public synchronized void startAsHost() {
+        Log.d(TAG, "startAsHost: Starting host connection");
+        // If the Connect Thread is not null. Then start fresh and make it null
+        if (mConnectThread != null) {
+            mConnectThread.cancel();
+            mConnectThread = null;
+            Log.d(TAG, "startAsHost: Cancelling prexisting connect thread");
         }
 
         // If there is no accept thread, then start one.
-        if (mAcceptInsecureThread == null) {
-            mAcceptInsecureThread = new AcceptThread();
-            mAcceptInsecureThread.start();
+        if (mAcceptInsecureThread != null) {
+            mAcceptInsecureThread.cancel();
         }
+
+        mAcceptInsecureThread = new AcceptThread();
+        mAcceptInsecureThread.start();
+
+        Log.d(TAG, "startAsHost: starting new accept thread");
     }
 
     public void startClient(BluetoothDevice device, UUID uuid) {
         Log.d(TAG, "startClient: startClient: Started");
-        mProgressBar.setVisibility(View.VISIBLE);
+        //mProgressBar.setVisibility(View.VISIBLE);
 
         mConnectThread = new ConnectThread(device, uuid);
         mConnectThread.start();
     }
 
     private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
-        Log.d(TAG, "connected: Starting:");
+        Log.d(TAG, "connected: Reached connected thread so thats good: " );
 
         mConnectedThread = new ConnectedThread(mmSocket);
         mConnectedThread.start();
     }
 
     public void write(byte[] out) {
-        //Temp object
-        ConnectedThread r;
-
         mConnectedThread.write(out);
+    }
+
+    public Context getmContext() {
+        return mContext;
+    }
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }
 

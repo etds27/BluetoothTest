@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Room {
     private String hash;
-    private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // used to generate hash
+    private static final String ALPHANUMERIC = "ABCDEF0123456789"; // used to generate hash
     private static final int ROOM_HASH_SIZE = 4;
 
     public void generateHash() {
