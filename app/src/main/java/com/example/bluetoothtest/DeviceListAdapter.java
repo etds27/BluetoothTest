@@ -13,7 +13,7 @@ import java.util.LinkedList;
 
 
 public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder> {
-    LinkedList<BluetoothDevice> mDevices;
+    public LinkedList<BluetoothDevice> mDevices;
     private DeviceOnClickListener mDeviceOnClickListener;
 
     public DeviceListAdapter(LinkedList<BluetoothDevice> mDevices, DeviceOnClickListener mDeviceOnClickListener) {
@@ -74,5 +74,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
     public int getItemCount() {
         return mDevices.size();
     }
+
+
 
 }

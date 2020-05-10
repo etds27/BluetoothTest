@@ -3,4 +3,64 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorGray">#666666</color>
+
+    <array name="player_color_arrays">
+        <item>@array/player_color_blue</item>
+        <item>@array/player_color_pink</item>
+        <item>@array/player_color_purple</item>
+        <item>@array/player_color_cyan</item>
+        <item>@array/player_color_green</item>
+        <item>@array/player_color_yellow</item>
+        <item>@array/player_color_orange</item>
+        <item>@array/player_color_red</item>
+
+    </array>
+
+    <!-- Color arrays are
+        Primary
+        Default -->
+    <array name="player_color_pink">
+        <item name="color_name">pink</item>
+        <item name="primary">#FFCCFF</item>
+        <item name="secondary">#880088</item>
+    </array>
+    <array name="player_color_purple">
+        <item name="color_name">purple</item>
+        <item name="primary">#CCCCFF</item>
+        <item name="secondary">#4400AA</item>
+    </array>
+    <array name="player_color_blue">
+        <item name="color_name">blue</item>
+        <item name="primary">#CCE5FF</item>
+        <item name="secondary">#003399</item>
+    </array>
+    <array name="player_color_cyan">
+        <item name="color_name">cyan</item>
+        <item name="primary">#CCFFFF</item>
+        <item name="secondary">#00CCCC</item>
+    </array>
+    <array name="player_color_green">
+        <item name="color_name">green</item>
+        <item name="primary">#CCFFCC</item>
+        <item name="secondary">#00CC00</item>
+    </array>
+    <array name="player_color_yellow">
+        <item name="color_name">yellow</item>
+        <item name="primary">#FFFFCC</item>
+        <item name="secondary">#CCCC00</item>
+    </array>
+    <array name="player_color_orange">
+        <item name="color_name">orange</item>
+        <item name="primary">#FFE5CC</item>
+        <item name="secondary">#CC6600</item>
+    </array>
+    <array name="player_color_red">
+        <item name="color_name">red</item>
+        <item name="primary">#FFCCCC</item>
+        <item name="secondary">#CC0000</item>
+    </array>
+
+
 </resources>

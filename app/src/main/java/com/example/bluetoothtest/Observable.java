@@ -3,13 +3,11 @@ package com.example.bluetoothtest;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Observable {
+public interface Observable {
 
     public final List<Observer> observers = new ArrayList<Observer>();
 
-    public void notifyObservers() {
-        for (Observer o : observers) {o.update();}
-    }
+    public void notifyObservers();
 
 
 }

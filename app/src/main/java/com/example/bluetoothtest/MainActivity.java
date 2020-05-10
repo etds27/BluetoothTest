@@ -1,143 +1,39 @@
 package com.example.bluetoothtest;
 
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
+import android.annotation.SuppressLint;
+import android.content.res.TypedArray;
 import android.util.Log;
-import android.view.View;
-import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.bluetoothtest.bluetooth.BluetoothConnectionClient;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import java.nio.charset.Charset;
-import java.util.LinkedList;
+import com.example.bluetoothtest.FragmentPagerAdapters.HomeScreenFragmentPagerAdapter;
+import com.example.bluetoothtest.bluetooth.BluetoothHostClientFragment;
+import com.example.bluetoothtest.game.CurrentGameFragment;
 
-public class MainActivity extends AppCompatActivity implements DeviceListAdapter.DeviceOnClickListener {
+import java.util.*;
+
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private BluetoothAdapter mBluetoothAdapter;
-    private TextView btStatusView;
-    private TextView btDiscoverabilityStatusView;
-    private Button btEnableDisableDiscoverable;
-    static public DeviceListAdapter deviceListAdapter;
-    private LinkedList<BluetoothDevice> discoverableDevices;
+    private FragmentManager fragmentManager;
 
-    public HostClientSelectFrame hostClientSelectFrame;
+    private HomeScreenFragment homeScreenFragment;
 
-    public static BluetoothConnectionClient bluetoothConnectionClient;
+    private SwipeViewPager viewPager;
 
+    public static HashMap<String, String[]> playerColors;
+    public static List<String> playerColorNames;
 
-
-    private final BroadcastReceiver mBluetoothReceiver1 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Get action of intent. In this case, it will probably be BLUETOOTH_STATE_CHANGE
-            String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, mBluetoothAdapter.ERROR);
-
-                switch(state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned off");
-                        btStatusView.setText("Off");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning off");
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned on");
-                        btStatusView.setText("On");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning on");
-                        break;
-                }
-
-            }
-        }
-    };
-
-    private final BroadcastReceiver mBluetoothReceiver2 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Get action of intent. In this case, it will probably be BLUETOOTH_STATE_CHANGE
-            String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, mBluetoothAdapter.ERROR);
-
-                switch(state) {
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
-                        Log.d(TAG, "mBluetoothReceiver2: Discoverability enabled");
-                        btDiscoverabilityStatusView.setText("Discoverability Enabled");
-                        break;
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE:
-                        Log.d(TAG, "mBluetoothReceiver2: Discoverability enabled. Able to receive connecitons");
-                        btDiscoverabilityStatusView.setText("Discoverability Enabled. Able to receive Connections");
-                        break;
-                    case BluetoothAdapter.SCAN_MODE_NONE:
-                        Log.d(TAG, "mBluetoothReceiver2: Discovreability Disabled.");
-                        btDiscoverabilityStatusView.setText("Discoverability Disabled");
-                        discoverableDevices = new LinkedList<>();
-                        deviceListAdapter.notifyAll();
-                        break;
-                    case BluetoothAdapter.STATE_CONNECTING:
-                        Log.d(TAG, "mBluetoothReceiver2: Connecting");
-                        btDiscoverabilityStatusView.setText("Connecting");
-                        break;
-                    case BluetoothAdapter.STATE_CONNECTED:
-                        Log.d(TAG, "mBluetoothReceiver2: Connected");
-                        btDiscoverabilityStatusView.setText("Connected");
-                        break;
-                }
-            }
-        }
-    };
-
-    private final BroadcastReceiver mBluetoothReceiver3 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Get action of intent. In this case, it will probably be BluetoothDevice.ACTION_FOUND
-            final String action = intent.getAction();
-            //Log.d(TAG, "mBluetoothReceiver3: " + Arrays.toString(intent.getExtras().keySet().toArray()));
+    HomeScreenFragmentPagerAdapter fragmentPagerAdapter;
 
 
-
-            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
-                Log.d(TAG, "mBluetoothReceiver3: ACTION FOUND");
-                // Get the device passed throught the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-
-                if (device.getName() != null) {
-                    // The device that was with the intent is added to the device list.
-                    discoverableDevices.add(device);
-                    Log.d(TAG, "mBluetoothReceiver3: Adding device to discoverable list" + device.getName() + ":" + device.getAddress());
-
-                    //Update the device recyclerview
-                    //deviceListAdapter.notifyDataSetChanged();
-                    deviceListAdapter.notifyItemInserted(discoverableDevices.size() - 1);
-                }
-            }
-
-        }
-    };
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mBluetoothReceiver1);
-        unregisterReceiver(mBluetoothReceiver2);
-        unregisterReceiver(mBluetoothReceiver3);
+
     }
 
     @Override
@@ -145,166 +41,81 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Map button in layout to java object.
-        Button btOnOff = (Button) findViewById(R.id.bt_on_off_button);
-        btStatusView = (TextView) findViewById(R.id.bluetooth_status);
-
-        btEnableDisableDiscoverable = (Button) findViewById(R.id.bt_enable_discoverability_button);
-        btDiscoverabilityStatusView = (TextView) findViewById(R.id.discoverability_status);
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        btOnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleBluetooth();
-            }
-        });
-
-        displayBTStatus(mBluetoothAdapter.getState());
+        viewPager = findViewById(R.id.fragment_container);
+        viewPager.setSwipable(false);
+        //new BluetoothHostClientFragment();
+        fragmentManager = getSupportFragmentManager();
+        //homeScreenFragment = new HomeScreenFragment();
 
 
-        // Creating Device List
-        discoverableDevices = new LinkedList<>();
-
-        // Because this implements the OnClickListener, I can pass the instance of itself to the list adapter
-        deviceListAdapter = new DeviceListAdapter(discoverableDevices, this);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        fragmentPagerAdapter = new HomeScreenFragmentPagerAdapter(fragmentManager);
+        fragmentPagerAdapter.addFragment(new HomeScreenFragment(), "HOME");
+        fragmentPagerAdapter.addFragment(new BluetoothHostClientFragment(), "BT_HOST_CLIENT");
+        fragmentPagerAdapter.addFragment(new CurrentGameFragment(), "CURRENT_GAME");
 
 
-        RecyclerView deviceList = findViewById(R.id.bt_device_recycler_view);
-        deviceList.setLayoutManager(llm);
-        deviceList.setAdapter(deviceListAdapter);
+        setPlayerColors(getResources().obtainTypedArray(R.array.player_color_arrays));
 
 
-        // Create the functionality for ther host and client buttons
-        Button hostButton = findViewById(R.id.designate_host_button);
+        viewPager.setAdapter(fragmentPagerAdapter);
 
-        Button clientButton = findViewById(R.id.designate_client_button);
-
-        FrameLayout hostClientFrame = findViewById(R.id.host_client_layout);
-
-
-        hostClientSelectFrame = new HostClientSelectFrame(this, hostButton, clientButton, hostClientFrame);
-        hostClientSelectFrame.placeHostFrame();
-
-        Button hiButton = findViewById(R.id.hi_button);
-        hiButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bluetoothConnectionClient.write("HI!".getBytes(Charset.defaultCharset()));
-            }
-        });
+        setViewPage(0);
     }
 
 
-    public void displayBTStatus(int status) {
-        switch(status) {
-            case BluetoothAdapter.STATE_OFF:
-                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned off");
-            case BluetoothAdapter.STATE_TURNING_OFF:
-                Log.d(TAG, "mBluetoothReceiver1: Bluetootk turning off");
-                btStatusView.setText("Off");
-                break;
-            case BluetoothAdapter.STATE_ON:
-                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turned on");
-            case BluetoothAdapter.STATE_TURNING_ON:
-                Log.d(TAG, "mBluetoothReceiver1: Bluetooth turning on");
-                btStatusView.setText("On");
-                break;
-        }
+    public Fragment getFragment(int index) {
+        return fragmentPagerAdapter.getItem(index);
     }
 
-    public void toggleBluetooth() {
-        // mBluetooth adapter will still be null if no bluetooth
-        // If bluetooth is enabled, then disable it
-        // If it isnt enabled, then disable it
-        if (mBluetoothAdapter == null) {
-            Log.d(TAG, "toggleBluetooth: Device doesnt have bluetooth");
-        } else if (mBluetoothAdapter.isEnabled()) {
-
-            mBluetoothAdapter.disable();
-
-            IntentFilter BTIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBluetoothReceiver1, BTIntentFilter);
-        } else {
-            //This is like saying, "Hey phone, im going to change the bluetooth state" So that anyone listening for that message can act accordingly
-            Intent toggleBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(toggleBTIntent);
-
-            //This will now intercept changes to the bluetooth state
-            IntentFilter BTIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBluetoothReceiver1, BTIntentFilter);
-        }
-
-        //Change labels to reflect bluetooth state
-        displayBTStatus(mBluetoothAdapter.getState());
+    public Fragment getFragment(String key) {
+        return fragmentPagerAdapter.getItem(fragmentPagerAdapter.getFragmentIndex(key));
     }
 
-    public void btEnableDisableDiscoverability(View view) {
-        Log.d(TAG, "btEnableDisableDiscoverability: Making device discoverable for 30 seconds");
-
-        Intent discoverabilityIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        //Put extra is like addidng parameters to the specific Intent Type
-        discoverabilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 30);
-        discoverabilityIntent.putExtra("SERVER_HOST_CLIENT", true);
-
-        startActivity(discoverabilityIntent);
-
-        //This pushes our broadcast receiver above to check the state after enables
-        IntentFilter discoverableIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        registerReceiver(mBluetoothReceiver2, discoverableIntentFilter);
-
-
-
+    public void setViewPage(String key) {
+        int index = fragmentPagerAdapter.getFragmentIndex(key);
+        setViewPage(index);
     }
 
-
-    public void btDiscoverDevices(View view) {
-        Log.d(TAG, "btDiscoverDevices: Discovering Devices");
-
-        if (mBluetoothAdapter.isDiscovering()) {
-            Log.d(TAG, "btDiscoverDevices: BT Adapter is discovering");
-            mBluetoothAdapter.cancelDiscovery();
-        }
-
-        //Necessary for API 23+
-        checkBTPermissions();
-
-        mBluetoothAdapter.startDiscovery();
-        IntentFilter discoverIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mBluetoothReceiver3, discoverIntent);
-
+    public void setViewPage(int index) {
+        viewPager.setCurrentItem(index);
     }
 
-    /**
-     * This method is required for all devices running API23+
-     * Android must programmatically check the permissions for bluetooth. Putting the proper permissions
-     * in the manifest is not enough.
-     *
-     * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
-     */
-    private void checkBTPermissions() {
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-            permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-            if (permissionCheck != 0) {
-
-                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
-            }
-        }else{
-            Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
-        }
+    public void enableSwipe(boolean b) {
+        viewPager.setSwipable(b);
     }
 
-    // Implemented from Device On Click
     @Override
-    public void onDeviceClick(int position) {
-        BluetoothDevice selectedDevice = discoverableDevices.get(position);
-        Log.d(TAG, "onDeviceClick: Selected " + selectedDevice.getName());
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
-        //BluetoothConnectionClient bluetoothConnectionClient = new BluetoothConnectionClient(getApplicationContext(), currentRoom);
+    public void setPlayerColors(TypedArray ta) {
+        TypedArray singlePlayerColors;
+        playerColors = new HashMap<>();
+        playerColorNames = new ArrayList<>();
+        Log.d(TAG, "setPlayerColors: Color Array " + ta);
+
+        // Looping through each resource id that points to color array
+        for (int i = 0; i < ta.length(); i++) {
+            int resId = ta.getResourceId(i, -1); // Get each resources id in the typed array
+            Log.d(TAG, "setPlayerColors: Resource id " + resId + " " + i);
+            if (resId <= 0) continue;
+
+
+            singlePlayerColors = this.getResources().obtainTypedArray(resId);
+            Log.d(TAG, "setPlayerColors: Single Player Colors " + singlePlayerColors);
+            String colorName = singlePlayerColors.getString(0);
+            @SuppressLint("ResourceType") String primary = singlePlayerColors.getString(1);
+            @SuppressLint("ResourceType") String secondary = singlePlayerColors.getString(2);
+            String[] colorArray = new String[] {primary, secondary};
+
+            playerColors.put(colorName, colorArray);
+            playerColorNames.add(colorName);
+        }
     }
 }
 

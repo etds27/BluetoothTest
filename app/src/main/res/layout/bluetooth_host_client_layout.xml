@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+
+                <LinearLayout
+                        android:paddingTop="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/host_client_switch_frame"
+                        >
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Host"
+                        />
+                    <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/host_client_switch"
+                            />
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Client"/>
+                </LinearLayout>
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/host_client_switch_frame"
+            android:id="@+id/bluetooth_host_client_frame"/>
+
+    <com.example.bluetoothtest.player.PlayerList
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/players_in_party"
+            android:layout_below="@id/bluetooth_host_client_frame"
+    />
+
+
+</RelativeLayout>

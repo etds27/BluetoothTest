@@ -5,113 +5,11 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        >
 
-    <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bt_on_off_layout">
-        <Button
-                android:text="On / Off"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:id="@+id/bt_on_off_button"
-
-        />
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bluetooth_status"
-                android:layout_toEndOf="@+id/bt_on_off_button"
-                android:text="STATUS"
-        />
-
-    </RelativeLayout>
-
-
-    <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/bt_on_off_layout"
-            android:id="@+id/bt_discoverability_layout">
-        <Button
-                android:text="Enable Discoverability"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:id="@+id/bt_enable_discoverability_button"
-                android:onClick="btEnableDisableDiscoverability"
-        />
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/discoverability_status"
-                android:layout_toEndOf="@+id/bt_enable_discoverability_button"
-                android:text="STATUS"
-        />
-
-    </RelativeLayout>
-
-    <Button
-            android:text="Discover Devics"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:id="@+id/bt_discover_devices"
-            android:onClick="btDiscoverDevices"
-            android:layout_below="@id/bt_discoverability_layout"
-    />
-
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.bluetoothtest.SwipeViewPager
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_below="@id/bt_discover_devices"
-            android:id="@+id/bt_device_recycler_view"
+            android:layout_height="match_parent"
+            android:id="@+id/fragment_container"
     />
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:layout_below="@id/bt_device_recycler_view"
-            >
-        <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/connection_type_frame"
-                >
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Host"
-                    android:id="@+id/designate_host_button"
-
-            />
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Client"
-                    android:id="@+id/designate_client_button"
-                    android:layout_toEndOf="@id/designate_host_button"
-            />
-
-        </RelativeLayout>
-        <FrameLayout
-                android:id="@+id/host_client_layout"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/connection_type_frame"/>
-        <!-- This button will just say hi to the other device-->
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="HI!"
-                android:layout_below="@id/host_client_layout"
-                android:layout_centerHorizontal="true"
-        android:id="@+id/hi_button"/>
     </RelativeLayout>
-
-
-
-
-
-</RelativeLayout>
