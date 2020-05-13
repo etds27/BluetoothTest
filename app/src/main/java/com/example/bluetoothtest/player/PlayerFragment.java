@@ -10,9 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.example.bluetoothtest.Observer;
 import com.example.bluetoothtest.R;
 
-public class PlayerFragment extends Fragment {
+public class PlayerFragment
+        extends Fragment
+        implements Observer {
 
     Player player;
 
@@ -21,7 +24,11 @@ public class PlayerFragment extends Fragment {
     }
 
 
-    public PlayerFragment newInstance(Player player) {
+    public static PlayerFragment newNullInstance() {
+        return new PlayerFragment(new Player("NULL", null));
+    }
+
+    public static PlayerFragment newInstance(Player player) {
         return new PlayerFragment(player);
     }
 
@@ -41,5 +48,26 @@ public class PlayerFragment extends Fragment {
 
 
         return view;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerFragment{" +
+                "player=" + player +
+                '}';
+    }
+
+    public boolean equals(Player p) {
+        if (player.equals(p)) return true;
+        return false;
     }
 }

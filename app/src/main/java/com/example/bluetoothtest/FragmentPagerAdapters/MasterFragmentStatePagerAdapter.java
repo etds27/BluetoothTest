@@ -2,18 +2,17 @@ package com.example.bluetoothtest.FragmentPagerAdapters;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class MasterFragmentPagerAdapter extends FragmentPagerAdapter {
+public abstract class MasterFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
     protected Map<String, Fragment> fragments = new HashMap<>();
     protected ArrayList<String> keyList = new ArrayList<>();
 
-    public MasterFragmentPagerAdapter(FragmentManager fm) {
+    public MasterFragmentStatePagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

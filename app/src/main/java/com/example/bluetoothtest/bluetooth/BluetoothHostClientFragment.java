@@ -2,7 +2,6 @@ package com.example.bluetoothtest.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +17,11 @@ import com.example.bluetoothtest.HomeScreenFragment;
 import com.example.bluetoothtest.MainActivity;
 import com.example.bluetoothtest.R;
 import com.example.bluetoothtest.Room;
-import com.example.bluetoothtest.game.CurrentGameFragment;
+import com.example.bluetoothtest.game.GameFragment;
+import com.example.bluetoothtest.game.LocalGameManager;
 import com.example.bluetoothtest.player.*;
+import com.example.bluetoothtest.player.list.PlayerList;
+import com.example.bluetoothtest.player.list.PlayerListAdapter;
 
 public class BluetoothHostClientFragment extends Fragment {
 
@@ -188,8 +190,8 @@ public class BluetoothHostClientFragment extends Fragment {
                 }
 
                 ((MainActivity) getActivity()).setViewPage("CURRENT_GAME");
-                CurrentGameFragment cgf = (CurrentGameFragment) ((MainActivity) getActivity()).getFragment("CURRENT_GAME");
-                cgf.setupGameDisplay();
+                GameFragment cgf = (GameFragment) ((MainActivity) getActivity()).getFragment("CURRENT_GAME");
+                new LocalGameManager(getContext(), currentRoom, cgf);
             }
         });
 

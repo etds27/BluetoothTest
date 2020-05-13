@@ -6,14 +6,14 @@
     <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <com.example.bluetoothtest.SwipeViewPager
+        <com.example.bluetoothtest.game.GameViewPager
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/game_view_pager"
         />
     </LinearLayout>
 
-    <com.example.bluetoothtest.player.PlayerList
+    <com.example.bluetoothtest.player.list.PlayerList
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

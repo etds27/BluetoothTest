@@ -1,10 +1,13 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.RelativeLayout;
+import com.example.bluetoothtest.player.Player;
+import com.example.bluetoothtest.player.list.PlayerListAdapter;
+import com.example.bluetoothtest.player.list.PlayerListRenderer;
 
 public class MiniPlayerListRenderer extends PlayerListRenderer {
+
     @Override
     public void displayItems(PlayerListAdapter.PlayerListViewHolder holder, Player player) {
         holder.playerName.setVisibility(View.VISIBLE);

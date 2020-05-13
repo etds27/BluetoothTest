@@ -1,4 +1,4 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.bluetoothtest.FragmentPagerAdapters.HomeScreenFragmentPagerAdapter;
 import com.example.bluetoothtest.bluetooth.BluetoothHostClientFragment;
-import com.example.bluetoothtest.game.CurrentGameFragment;
+import com.example.bluetoothtest.game.GameFragment;
 
 import java.util.*;
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentPagerAdapter = new HomeScreenFragmentPagerAdapter(fragmentManager);
         fragmentPagerAdapter.addFragment(new HomeScreenFragment(), "HOME");
         fragmentPagerAdapter.addFragment(new BluetoothHostClientFragment(), "BT_HOST_CLIENT");
-        fragmentPagerAdapter.addFragment(new CurrentGameFragment(), "CURRENT_GAME");
+        fragmentPagerAdapter.addFragment(new GameFragment(), "CURRENT_GAME");
 
 
         setPlayerColors(getResources().obtainTypedArray(R.array.player_color_arrays));

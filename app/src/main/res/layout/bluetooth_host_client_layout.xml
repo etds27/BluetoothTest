@@ -36,7 +36,7 @@
             android:layout_below="@id/host_client_switch_frame"
             android:id="@+id/bluetooth_host_client_frame"/>
 
-    <com.example.bluetoothtest.player.PlayerList
+    <com.example.bluetoothtest.player.list.PlayerList
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/players_in_party"

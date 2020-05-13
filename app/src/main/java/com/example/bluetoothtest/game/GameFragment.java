@@ -1,13 +1,10 @@
 package com.example.bluetoothtest.game;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,12 +15,14 @@ import com.example.bluetoothtest.R;
 import com.example.bluetoothtest.Room;
 import com.example.bluetoothtest.SwipeViewPager;
 import com.example.bluetoothtest.player.*;
-import com.example.bluetoothtest.test.TestFragment;
+import com.example.bluetoothtest.player.list.MiniPlayerListRenderer;
+import com.example.bluetoothtest.player.list.PlayerList;
+import com.example.bluetoothtest.player.list.PlayerListAdapter;
 
-public class CurrentGameFragment extends Fragment {
+public class GameFragment extends Fragment {
 
     private static final String TAG = "CurrentGameFragment";
-    private SwipeViewPager mViewPager;
+    private GameViewPager mViewPager;
     private PlayerList mPlayerList;
     public PlayerListAdapter mPlayerListAdapter;
     private Room currentRoom;
@@ -53,6 +52,7 @@ public class CurrentGameFragment extends Fragment {
         mPlayerList = view.findViewById(R.id.hud_player_list);
         mPlayerList.setEnabled(false);
 
+        // Set up hud player list adapter
         mPlayerListAdapter = (PlayerListAdapter) mPlayerList.getAdapter();
         mPlayerListAdapter.setPlayerListRenderer(new MiniPlayerListRenderer());
         LinearLayoutManager llm = new LinearLayoutManager(this.getContext());
@@ -91,15 +91,11 @@ public class CurrentGameFragment extends Fragment {
 
     public void setupViewPager(ViewPager viewPager) {
         gameFragmentPagerAdapter = new GameFragmentPagerAdapter(getChildFragmentManager());
-
-
-        mViewPager.setAdapter(gameFragmentPagerAdapter);
     }
 
 
-    public void setupGameDisplay() {
+    public int setupGameDisplay() {
         mPlayerListAdapter.notifyDataSetChanged();
-
 
         for (Player player : currentRoom) {
             player.createFragment();
@@ -108,14 +104,15 @@ public class CurrentGameFragment extends Fragment {
             gameFragmentPagerAdapter.notifyDataSetChanged();
         }
 
-        Log.d(TAG, "setupGameDisplay: view " + getView().getParent());
-
-        Log.d(TAG, "setupGameDisplay: pageviewer " + mViewPager.getParent());
         //Log.d(TAG, "setupGameDisplay: fragment " + currentRoom.get(0).getFragment().getParentFragment());
-
-        mViewPager.setCurrentItem(0);
-        gameFragmentPagerAdapter.notifyDataSetChanged();
+        Log.d(TAG, "setupGameDisplay: fragment: " + gameFragmentPagerAdapter.getItem(0));
+        mViewPager.setAdapter(gameFragmentPagerAdapter);
+        int startIndex = mViewPager.getChildCount() * GameFragmentPagerAdapter.LOOPS_COUNT / 2;
+        mViewPager.setCurrentItem(startIndex);
+        return startIndex;
     }
 
-
+    public GameViewPager getViewPager() {
+        return mViewPager;
+    }
 }

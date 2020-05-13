@@ -1,8 +1,7 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,10 +12,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.view.MotionEventCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.bluetoothtest.R;
 import com.example.bluetoothtest.Room;
+import com.example.bluetoothtest.player.Host;
+import com.example.bluetoothtest.player.Player;
+
 import java.util.Collections;
 
 public class PlayerListAdapter

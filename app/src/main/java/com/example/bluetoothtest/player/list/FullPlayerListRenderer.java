@@ -1,9 +1,9 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
-import android.graphics.Color;
-import android.view.MotionEvent;
 import android.view.View;
-import androidx.recyclerview.widget.RecyclerView;
+import com.example.bluetoothtest.player.Player;
+import com.example.bluetoothtest.player.list.PlayerListAdapter;
+import com.example.bluetoothtest.player.list.PlayerListRenderer;
 
 public class FullPlayerListRenderer extends PlayerListRenderer {
     @Override

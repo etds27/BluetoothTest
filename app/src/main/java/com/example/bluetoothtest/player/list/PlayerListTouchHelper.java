@@ -1,4 +1,4 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;

@@ -1,8 +1,7 @@
-package com.example.bluetoothtest.player;
+package com.example.bluetoothtest.player.list;
 
 import android.graphics.Color;
-import android.view.View;
-import androidx.recyclerview.widget.RecyclerView;
+import com.example.bluetoothtest.player.Player;
 
 public abstract class PlayerListRenderer {
     public abstract void displayItems(PlayerListAdapter.PlayerListViewHolder holder, Player player);

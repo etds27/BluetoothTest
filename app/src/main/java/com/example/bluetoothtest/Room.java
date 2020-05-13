@@ -1,9 +1,7 @@
 package com.example.bluetoothtest;
 
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import com.example.bluetoothtest.player.Player;
-import com.example.bluetoothtest.player.PlayerList;
+import com.example.bluetoothtest.player.list.PlayerList;
 
 import java.util.*;
 
