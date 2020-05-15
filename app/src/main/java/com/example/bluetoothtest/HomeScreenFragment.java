@@ -24,6 +24,8 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.bluetoothtest.bluetooth.BluetoothConnectionClient;
+import com.example.bluetoothtest.bluetooth.BluetoothHostClientFragment;
+import com.example.bluetoothtest.lobby_creator.LocalLobbyFragment;
 
 import java.nio.charset.Charset;
 import java.util.LinkedList;
@@ -101,7 +103,22 @@ public class HomeScreenFragment extends Fragment  implements DeviceListAdapter.D
         bluetoothConnectionType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) getActivity()).setViewPage("BT_HOST_CLIENT");
+                MainActivity main = (MainActivity) getActivity();
+                main.fragmentPagerAdapter.addFragment(new BluetoothHostClientFragment(), "BT_LOBBY");
+                main.setViewPage("BT_LOBBY");
+            }
+        });
+
+        // Create onclick listener for Local Button. This will create a local lobby fragment and switch to it
+        Button localGameButton = view.findViewById(R.id.local_fragment_button);
+
+        localGameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity main = (MainActivity) getActivity();
+                main.fragmentPagerAdapter.addFragment(new LocalLobbyFragment(), "LOCAL_LOBBY");
+                main.fragmentPagerAdapter.notifyDataSetChanged();
+                main.setViewPage("LOCAL_LOBBY");
             }
         });
 

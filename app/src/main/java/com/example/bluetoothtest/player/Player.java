@@ -11,6 +11,8 @@ public class Player {
     protected String primaryColor;
     protected String secondaryColor;
     protected PlayerFragment fragment;
+    protected int turnsTaken = 1;
+    protected int turnsSkipped;
 
     public Player(String name, BluetoothDevice btDevice) {
         this.name = name;
@@ -56,4 +58,14 @@ public class Player {
     public void createFragment() {
         fragment = new PlayerFragment(this);
     }
+
+    public int getTurnsTaken() {
+        return turnsTaken;
+    }
+
+    public void incrementTurnCounter(boolean increment)  {
+        if (increment) turnsTaken++;
+        else turnsTaken--;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.bluetoothtest.player;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.bluetoothtest.Observer;
 import com.example.bluetoothtest.R;
+import org.w3c.dom.Text;
 
 public class PlayerFragment
         extends Fragment
         implements Observer {
 
-    Player player;
+    private static final String TAG = "PlayerFragment";
+    private Player player;
+
 
     public PlayerFragment(Player player) {
         this.player = player;
@@ -43,12 +47,16 @@ public class PlayerFragment
         playerNameView.setText(text);
         playerNameView.setTextColor(Color.parseColor(player.getSecondaryColor()));
 
+
+
         LinearLayout layout = view.findViewById(R.id.player_fragment_layout);
         layout.setBackgroundColor(Color.parseColor(player.getPrimaryColor()));
 
 
         return view;
     }
+
+
 
     public Player getPlayer() {
         return player;

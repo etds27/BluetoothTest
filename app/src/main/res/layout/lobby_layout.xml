@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="100"
+              android:layout_centerHorizontal="true"
+              >
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:id="@+id/lobby_variable_frame"
+    />
+
+    <com.example.bluetoothtest.player.list.PlayerList
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lobby_player_list"
+            android:layout_weight="35"
+    />
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:layout_centerInParent="true"
+                android:id="@+id/start_game_button"
+        />
+    </RelativeLayout>
+
+
+</LinearLayout>

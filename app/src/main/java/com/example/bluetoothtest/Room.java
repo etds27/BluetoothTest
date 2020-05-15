@@ -93,7 +93,11 @@ public class Room extends ArrayList<Player> {
         usedColors.add(colorName);
         player.setPrimaryColor(MainActivity.playerColors.get(colorName)[0]);
         player.setSecondaryColor(MainActivity.playerColors.get(colorName)[1]);
-        return super.add(player);
+
+        boolean ret = super.add(player);
+
+        updateLists();
+        return ret;
     }
 
 }

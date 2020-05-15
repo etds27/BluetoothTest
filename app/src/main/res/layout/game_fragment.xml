@@ -3,6 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+
     <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -22,5 +23,37 @@
             android:id="@+id/hud_player_list"
 
     />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:orientation="vertical"
+    >
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/player_turn_counter"
+                android:text="Player's Turns: "
+                android:paddingStart="30dp"
+
+        />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/total_turn_counter"
+                android:text="Total Turns: "
+                android:paddingStart="30dp"
+        />
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="85"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

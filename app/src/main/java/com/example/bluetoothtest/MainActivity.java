@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentPagerAdapter = new HomeScreenFragmentPagerAdapter(fragmentManager);
         fragmentPagerAdapter.addFragment(new HomeScreenFragment(), "HOME");
-        fragmentPagerAdapter.addFragment(new BluetoothHostClientFragment(), "BT_HOST_CLIENT");
+        //fragmentPagerAdapter.addFragment(new BluetoothHostClientFragment(), "BT_HOST_CLIENT");
         fragmentPagerAdapter.addFragment(new GameFragment(), "CURRENT_GAME");
 
 

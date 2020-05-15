@@ -77,6 +77,7 @@
                 android:layout_centerHorizontal="true"
                 android:id="@+id/connection_type_frame"
                 android:orientation="vertical"
+                android:gravity="center"
         >
             <TextView
                     android:layout_width="wrap_content"
@@ -88,6 +89,11 @@
                     android:text="Bluetooth"
                     android:id="@+id/bluetooth_fragment_button"
                     />
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Local"
+                    android:id="@+id/local_fragment_button"/>
 
         </LinearLayout>
 

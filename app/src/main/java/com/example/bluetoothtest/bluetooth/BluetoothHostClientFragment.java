@@ -189,9 +189,7 @@ public class BluetoothHostClientFragment extends Fragment {
                     playerListAdapter.addItem(p);
                 }
 
-                ((MainActivity) getActivity()).setViewPage("CURRENT_GAME");
-                GameFragment cgf = (GameFragment) ((MainActivity) getActivity()).getFragment("CURRENT_GAME");
-                new LocalGameManager(getContext(), currentRoom, cgf);
+
             }
         });
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,8 @@ public class GameFragment extends Fragment {
     public PlayerListAdapter mPlayerListAdapter;
     private Room currentRoom;
     private GameFragmentPagerAdapter gameFragmentPagerAdapter;
+    private TextView playerTurnCounterView;
+    private TextView totalTurnCounterView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +54,10 @@ public class GameFragment extends Fragment {
         // Create mini player list in top right of game
         mPlayerList = view.findViewById(R.id.hud_player_list);
         mPlayerList.setEnabled(false);
+
+
+        playerTurnCounterView = view.findViewById(R.id.player_turn_counter);
+        totalTurnCounterView = view.findViewById(R.id.total_turn_counter);
 
         // Set up hud player list adapter
         mPlayerListAdapter = (PlayerListAdapter) mPlayerList.getAdapter();
@@ -114,5 +121,13 @@ public class GameFragment extends Fragment {
 
     public GameViewPager getViewPager() {
         return mViewPager;
+    }
+
+    public void updateTurnCounters(int playerCount, int totalCount) {
+        String playerString = "Player's turns: " + playerCount;
+        String totalString = "Total turns: " + totalCount;
+
+        playerTurnCounterView.setText(playerString);
+        totalTurnCounterView.setText(totalString);
     }
 }
